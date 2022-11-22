@@ -33,20 +33,17 @@ namespace Apex.Repository
             return Task.CompletedTask;
         }
 
-        public bool Exists(Expression<Func<TEntity, bool>> filter)
-        {
-            return _dbSet.Any(filter);
-        }
+        public async Task<bool> Exists(Expression<Func<TEntity, bool>> filter) =>
+            await _dbSet.AnyAsync(filter);
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
-        {
-            return await _dbSet.ToListAsync();
-        }
+        public async Task<IEnumerable<TEntity>> GetAllAsync() =>
+            await _dbSet.ToListAsync();
 
-        public async Task<TEntity> GetByIdAsync(int id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+        public async Task<TEntity> GetByIdAsync(int id) =>
+            await _dbSet.FindAsync(id);
+        
+        public async Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> filter) =>
+            await _dbSet.FirstOrDefaultAsync(filter);
 
         public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> filter = null,
                                                         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,

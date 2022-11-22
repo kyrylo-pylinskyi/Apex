@@ -1,22 +1,24 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Apex.Models
+namespace Apex.Models.Entities
 {
     public class User
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Mail { get; set; }
+        public string Email { get; set; }
         public string Phone { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Role Role { get; set; }
-        public string EmailCode { get; set; }
-        public int CompanyId { get; set; }
-        [ForeignKey("ComnpanyId")]
+        public Roles Role { get; set; }
+        public string? VerificationToken { get; set; }
+        public DateTime? VerifiedAt { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
+        public int? CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
         public Company? Company { get; set; }
-
     }
 }

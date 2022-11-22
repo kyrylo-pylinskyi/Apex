@@ -1,5 +1,3 @@
-using Apex.Models;
-
 namespace Apex.Repository
 {
     public class UnitOfWork : IUnitOfWork

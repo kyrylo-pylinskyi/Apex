@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Apex.Models
+namespace Apex.Models.Entities
 {
     public class Post
     {
@@ -8,8 +8,8 @@ namespace Apex.Models
         public string Name { get; set; }
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int CreatorId { get; set; }
+        public int? CreatorId { get; set; }
         [ForeignKey("CreatorId")]
-        public User Creator { get; set; }
+        public User? Creator { get; set; }
     }
 }

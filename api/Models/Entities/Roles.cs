@@ -1,6 +1,6 @@
-namespace Apex.Models
+namespace Apex.Models.Entities
 {
-    public enum Role
+    public enum Roles
     {
         Guest,
         Client,

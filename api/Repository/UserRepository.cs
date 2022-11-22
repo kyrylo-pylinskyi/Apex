@@ -1,6 +1,3 @@
-using System.IO.Pipes;
-using Apex.Models;
-
 namespace Apex.Repository
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
@@ -9,9 +6,13 @@ namespace Apex.Repository
         {
         }
 
-        public bool MailReserved(string mail)
-        {
-            return Exists(u => u.Mail.Equals(mail));
-        }
+        public async Task<bool> MailReserved(string mail) => 
+            await Exists(u => u.Email.Equals(mail));
+        public async Task<User> FindByMail(string mail) => 
+            await GetFirstAsync(u => u.Email.Equals(mail));
+        public async Task<User> FindByToken(string token) => 
+            await GetFirstAsync(u => u.VerificationToken.Equals(token));
+        public async Task<User> FindByResetPasswordToken(string token) => 
+            await GetFirstAsync(u => u.PasswordResetToken.Equals(token));
     }
 }

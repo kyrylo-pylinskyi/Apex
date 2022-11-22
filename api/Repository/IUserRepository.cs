@@ -1,9 +1,10 @@
-using Apex.Models;
-
 namespace Apex.Repository
 {
     public interface IUserRepository : IBaseRepository<User>
     {
-        bool MailReserved(string mail);
+        Task<bool> MailReserved(string mail);
+        Task<User> FindByMail(string mail);
+        Task<User> FindByToken(string token);
+        Task<User> FindByResetPasswordToken(string token);
     }
 }

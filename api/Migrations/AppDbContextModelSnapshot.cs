@@ -22,7 +22,7 @@ namespace Apex.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Apex.Models.Company", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,16 +33,7 @@ namespace Apex.Migrations
                     b.Property<int>("AdminId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmailCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Mail")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -50,27 +41,16 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Company");
+                    b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("Apex.Models.Contract", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Contract", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +58,7 @@ namespace Apex.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -91,7 +71,7 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -100,10 +80,37 @@ namespace Apex.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Contract");
+                    b.ToTable("Contracts");
                 });
 
-            modelBuilder.Entity("Apex.Models.Post", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EmployedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Job")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("Apex.Models.Entities.Post", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,7 +125,7 @@ namespace Apex.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatorId")
+                    b.Property<int?>("CreatorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -129,10 +136,10 @@ namespace Apex.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Post");
+                    b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Apex.Models.User", b =>
+            modelBuilder.Entity("Apex.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,25 +147,18 @@ namespace Apex.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ComnpanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmailCode")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Mail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -168,6 +168,9 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -176,60 +179,70 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ResetTokenExpires")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ComnpanyId");
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Apex.Models.Contract", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Contract", b =>
                 {
-                    b.HasOne("Apex.Models.Company", "Company")
-                        .WithMany("Contracts")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Apex.Models.Entities.Company", "Company")
+                        .WithMany("Contracts2")
+                        .HasForeignKey("CompanyId");
 
-                    b.HasOne("Apex.Models.Post", "Post")
+                    b.HasOne("Apex.Models.Entities.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostId");
 
                     b.Navigation("Company");
 
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("Apex.Models.Post", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Employee", b =>
                 {
-                    b.HasOne("Apex.Models.User", "Creator")
+                    b.HasOne("Apex.Models.Entities.Company", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyId");
+                });
+
+            modelBuilder.Entity("Apex.Models.Entities.Post", b =>
+                {
+                    b.HasOne("Apex.Models.Entities.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatorId");
 
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("Apex.Models.User", b =>
+            modelBuilder.Entity("Apex.Models.Entities.User", b =>
                 {
-                    b.HasOne("Apex.Models.Company", "Company")
-                        .WithMany("Users")
-                        .HasForeignKey("ComnpanyId");
+                    b.HasOne("Apex.Models.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("Apex.Models.Company", b =>
+            modelBuilder.Entity("Apex.Models.Entities.Company", b =>
                 {
-                    b.Navigation("Contracts");
+                    b.Navigation("Contracts2");
 
-                    b.Navigation("Users");
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

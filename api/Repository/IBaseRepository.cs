@@ -9,11 +9,12 @@ namespace Apex.Repository
         Task DeleteManyAsync(Expression<Func<T, bool>> filter);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
+        Task<T> GetFirstAsync(Expression<Func<T, bool>> filter);
         Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> filter = null,
                                         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
                                         int? top = null,
                                         int? skip = null,
                                         params string[] includeProperties);
-        bool Exists(Expression<Func<T, bool>> filter); 
+        Task<bool> Exists(Expression<Func<T, bool>> filter); 
     }
 }
