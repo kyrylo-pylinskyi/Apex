@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { TextInputField, Button } from "evergreen-ui";
+import { Button } from "evergreen-ui";
 import FormUserDetails from "./FormUserDetails";
 import FormPersonalDetails from "./FormPersonalDetails";
 import Confirm from "./Confirm";
-import Success from "./Success";
+import { Navigate } from 'react-router-dom';
 import FormPassword from "./FormPassword";
 import axios from "axios";
 
@@ -60,14 +60,17 @@ export class RegisterForm extends Component {
     .catch(function (error) {
       console.log(error);
     });
+
+    const { step } = this.state;
+    this.setState({
+      step: step + 1,
+    });
+
   };
 
   handleChange = (input) => (e) => {
     this.setState({ [input]: e.target.value }, () => {
       this.validateField(input, e.target.value);
-      console.log("input, e:");
-      console.log(input);
-      console.log(e.target.value);
     });
   };
 
@@ -110,7 +113,7 @@ export class RegisterForm extends Component {
           : "password is too short";
         break;
       case "confirmPassword":
-        confirmPasswordValid = value == this.state.password;
+        confirmPasswordValid = value === this.state.password;
         fieldValidationErrors.confirmPassword = confirmPasswordValid
           ? ""
           : "password doesn't match";
@@ -226,7 +229,7 @@ export class RegisterForm extends Component {
           />
         );
       case 5:
-        return <Success />;
+        return <Navigate to="/confirm-email" />;
       default:
         console.log("This is a multi-step form built with React.");
     }
