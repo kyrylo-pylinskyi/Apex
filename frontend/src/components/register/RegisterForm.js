@@ -3,7 +3,9 @@ import { Button } from "evergreen-ui";
 import FormUserDetails from "./FormUserDetails";
 import FormPersonalDetails from "./FormPersonalDetails";
 import Confirm from "./Confirm";
-import { Navigate } from 'react-router-dom';
+import VerifyEmail from "./VerifyEmail";
+import Success from "./Success";
+import { Navigate } from "react-router-dom";
 import FormPassword from "./FormPassword";
 import axios from "axios";
 
@@ -16,6 +18,7 @@ export class RegisterForm extends Component {
     email: "",
     password: "",
     confirmPassword: "",
+    verificationCode: "",
     formErrors: {
       firstName: "",
       lastName: "",
@@ -23,6 +26,7 @@ export class RegisterForm extends Component {
       email: "",
       password: "",
       confirmPassword: "",
+      verificationCode: "",
     },
     firstNameValid: false,
     lastNameValid: false,
@@ -30,6 +34,7 @@ export class RegisterForm extends Component {
     emailValid: false,
     passwordValid: false,
     confirmPasswordValid: false,
+    verificationCodeVald: false,
   };
 
   nextStep = () => {
@@ -47,25 +52,37 @@ export class RegisterForm extends Component {
   };
 
   registerUser = () => {
-    axios.post('https://localhost:4000/api/Auth/register', {
-      name: `${this.state.firstName} ${this.state.lastName}` ,
-      email: this.state.email,
-      phone: this.state.phone,
-      password: this.state.password,
-      confirmPassword: this.state.confirmPassword
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    axios
+      .post("https://localhost:4000/api/Auth/register", {
+        name: `${this.state.firstName} ${this.state.lastName}`,
+        email: this.state.email,
+        phone: this.state.phone,
+        password: this.state.password,
+        confirmPassword: this.state.confirmPassword,
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
-    const { step } = this.state;
-    this.setState({
-      step: step + 1,
-    });
+    this.nextStep();
+  };
 
+  verify = () => {
+    axios
+      .post(
+        `https://localhost:4000/api/Auth/verify-email/${this.state.verificationCode}`
+      )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    this.nextStep();
   };
 
   handleChange = (input) => (e) => {
@@ -82,6 +99,7 @@ export class RegisterForm extends Component {
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
     let confirmPasswordValid = this.state.confirmPasswordValid;
+    let verificationCodeValid = this.state.verificationCode;
 
     switch (fieldName) {
       case "firstName":
@@ -118,6 +136,11 @@ export class RegisterForm extends Component {
           ? ""
           : "password doesn't match";
         break;
+      case "verificationCode":
+        verificationCodeValid = value.length === 6;
+        fieldValidationErrors.verificationCode = verificationCodeValid
+          ? ""
+          : "email verification code must contain 6 characters";
       default:
         break;
     }
@@ -130,6 +153,7 @@ export class RegisterForm extends Component {
       emailValid: emailValid,
       passwordValid: passwordValid,
       confirmPasswordValid: confirmPasswordValid,
+      verificationCodeValid: verificationCodeValid,
     });
   };
 
@@ -151,8 +175,15 @@ export class RegisterForm extends Component {
 
   render() {
     const { step, formErrors } = this.state;
-    const { firstName, lastName, email, phone, password, confirmPassword } =
-      this.state;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      verificationCode,
+    } = this.state;
     const values = {
       firstName,
       lastName,
@@ -160,6 +191,7 @@ export class RegisterForm extends Component {
       phone,
       password,
       confirmPassword,
+      verificationCode,
     };
     const {
       firstNameValid,
@@ -168,6 +200,7 @@ export class RegisterForm extends Component {
       phoneValid,
       passwordValid,
       confirmPasswordValid,
+      verificationCodeVald,
     } = this.state;
     const validations = {
       firstNameValid,
@@ -176,6 +209,7 @@ export class RegisterForm extends Component {
       phoneValid,
       passwordValid,
       confirmPasswordValid,
+      verificationCodeVald,
     };
 
     switch (step) {
@@ -229,7 +263,27 @@ export class RegisterForm extends Component {
           />
         );
       case 5:
-        return <Navigate to="/confirm-email" />;
+        return (
+          <VerifyEmail
+            handleChange={this.handleChange}
+            nextStep={this.verify}
+            values={values}
+            validations={validations}
+            formErrors={formErrors}
+          />
+        );
+      case 6:
+        return (
+          <Success
+            handleChange={this.handleChange}
+            nextStep={this.nextStep}
+            values={values}
+            validations={validations}
+            formErrors={formErrors}
+          />
+        );
+      case 7:
+        return <Navigate to="/login" />;
       default:
         console.log("This is a multi-step form built with React.");
     }

@@ -11,7 +11,7 @@ export class FormPassword extends Component {
     this.props.prevStep();
   };
   render() {
-    const { values, handleChange, formErrors } = this.props;
+    const { values, handleChange, formErrors, renderButton } = this.props;
     return (
       <FormField>
         <TextInputField
@@ -35,7 +35,7 @@ export class FormPassword extends Component {
         <Button marginRight={5} onClick={this.back}>
           Back
         </Button>
-        {this.props.renderButton}
+        {renderButton}
       </FormField>
     );
   }

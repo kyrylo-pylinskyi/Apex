@@ -8,14 +8,14 @@ export class FormUserDetails extends Component {
   };
 
   render() {
-    const { values, handleChange, formErrors } = this.props;
+    const { values, handleChange, formErrors, renderButton } = this.props;
     return (
       <FormField>
         <TextInputField
           label="Enter your first name"
           required
           placeholder="John"
-          onChange={this.props.handleChange("firstName")}
+          onChange={handleChange("firstName")}
           defaultValue={this.props.values.firstName}
         />
         <i>{formErrors.firstName}</i>
@@ -29,7 +29,7 @@ export class FormUserDetails extends Component {
         />
         <i>{formErrors.lastName}</i>
         <br />
-        {this.props.renderButton}
+        {renderButton}
       </FormField>
     );
   }
