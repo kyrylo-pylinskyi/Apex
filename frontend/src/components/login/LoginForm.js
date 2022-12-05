@@ -3,13 +3,6 @@ import { FormField, TextInputField, Button } from "evergreen-ui";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function useRedirect() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate("/home");
-  });
-}
-
 export class LoginForm extends Component {
   state = {
     email: "",
@@ -28,9 +21,10 @@ export class LoginForm extends Component {
         password: this.state.password,
       })
       .then((response) => {
-        this.setState({ token: `bearer ${response.data}` });
+        this.setState({ token: `Bearer ${response.data}` });
         console.log(JSON.stringify(this.state.token));
-        localStorage.setItem("token", JSON.stringify(this.state.token));
+        localStorage.setItem("access_token", JSON.stringify(this.state.token));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
       })
       .catch((error) => {
         console.log(error);
@@ -38,6 +32,8 @@ export class LoginForm extends Component {
   };
 
   getMe = () => {
+    console.log(this.state.token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
     axios
       .post(`https://localhost:4000/api/Auth/get-me`)
       .then((response) => {
@@ -46,7 +42,7 @@ export class LoginForm extends Component {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   render() {
     return (

@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.2.0",
     "bootstrap": "^5.2.2",
+    "cookie-parser": "^1.4.6",
     "evergreen-ui": "^6.12.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
