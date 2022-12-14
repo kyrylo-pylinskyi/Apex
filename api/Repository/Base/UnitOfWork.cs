@@ -1,10 +1,23 @@
-namespace Apex.Repository
+using Apex.Repository.CompanyRepo;
+using Apex.Repository.PostRepo;
+using Apex.Repository.UserRepo;
+using Apex.Repository.ContractRepo;
+
+namespace Apex.Repository.Base
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _dbContext;
         private UserRepository _userRepository;
+        private PostRepository _postRepository;
+        private CompanyRepository _companyRepository;
+        private EmployeeRepository _employeeRepository;
+        private ContractRepository _contractRepository;
         public IUserRepository UserRepository => _userRepository ?? (_userRepository = new UserRepository(_dbContext));
+        public IPostRepository PostRepository => _postRepository ?? (_postRepository = new PostRepository(_dbContext));
+        public ICompanyRepository CompanyRepository => _companyRepository ?? (_companyRepository = new CompanyRepository(_dbContext));
+        public IEmployeeRepository EmployeeRepository => _employeeRepository ?? (_employeeRepository = new EmployeeRepository(_dbContext));
+        public IContractRepository ContractRepository => _contractRepository ?? (_contractRepository = new ContractRepository(_dbContext));
 
         public UnitOfWork(AppDbContext dbContext)
         {

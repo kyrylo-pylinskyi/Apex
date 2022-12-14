@@ -1,6 +1,6 @@
 global using Apex.Data;
 global using Microsoft.EntityFrameworkCore;
-global using Apex.Repository;
+global using Apex.Repository.Base;
 global using Apex.Service.MailService;
 global using Apex.Service.UserService;
 using System.Text;

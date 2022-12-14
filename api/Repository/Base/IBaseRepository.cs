@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Apex.Repository
+namespace Apex.Repository.Base
 {
     public interface IBaseRepository<T> where T : class
     {

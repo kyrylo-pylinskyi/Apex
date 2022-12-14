@@ -1,4 +1,6 @@
-namespace Apex.Repository
+using Apex.Repository.Base;
+
+namespace Apex.Repository.UserRepo
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {

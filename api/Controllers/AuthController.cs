@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Apex.Repository;
+using Apex.Repository.Base;
 using Apex.Models.Dto;
 using Apex.Models;
 using System.Security.Cryptography;
@@ -60,7 +60,11 @@ public class AuthController : ControllerBase
         {
             To = user.Email,
             Subject = "Apex Email Verification Code",
-            Body = $"Your Email Verifification Token <br> {user.VerificationToken}"
+            Body = $"<h2> Hello {user.Name}</h2>" + 
+                    "<p>You can actvate you Apex account with this link</p>" +
+                    $"<b>{user.VerificationToken}</b><br/>" +
+                    $"<a href=\"https://localhost:3000/confirm-email/{user.VerificationToken}\">" + 
+                    "Verify </a>"
         };
 
         _mailService.SendMail(message);
@@ -173,7 +177,7 @@ public class AuthController : ControllerBase
     }
 
     private string CreateRandomToken() =>
-        Convert.ToHexString(RandomNumberGenerator.GetBytes(3));
+        Convert.ToHexString(RandomNumberGenerator.GetBytes(8));
 
     private string CreateToken(User user)
     {
