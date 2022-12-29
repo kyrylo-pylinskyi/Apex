@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Apex.Repository.Base;
-using Apex.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Apex.Models.Dto;
+using Apex.Models.RequestDto;
 
 namespace Apex.Controllers;
 
@@ -21,12 +20,17 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> GetCompanyById(int id)
+    {
+        return Ok(await _unitOfWork.CompanyRepository.GetCompanyById(id));
+    }
+
+    [HttpGet]
     [Route("list")]
     public async Task<IActionResult> GetCompanies()
     {
-        var companies = await _unitOfWork.CompanyRepository.GetManyAsync();
-        var employees = await _unitOfWork.EmployeeRepository.GetManyAsync();
-        return Ok(await _unitOfWork.CompanyRepository.GetManyAsync());
+        return Ok(await _unitOfWork.CompanyRepository.GetCompanies());
     }
 
     [HttpGet]
@@ -34,15 +38,25 @@ public class CompanyController : ControllerBase
     public async Task<IActionResult> GetMyCompany()
     {
         var userId = _userService.GetUserId();
-        return Ok(await _unitOfWork.CompanyRepository.GetFirstAsync(c => c.AdminId == userId));
+        return Ok(await _unitOfWork.CompanyRepository.FindByAdminId(userId));
+    }
+
+    [HttpGet]
+    [Route("user/{id}")]
+    public async Task<IActionResult> GetUserCompany(int id)
+    {
+        var company = await _unitOfWork.CompanyRepository.FindByAdminId(id);
+        if(company is null)
+            return BadRequest("Company not found");
+        return Ok(company);
     }
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateCompany(CompanyDto request)
+    public async Task<IActionResult> CreateCompany(CompanyRequest request)
     {
         var userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
 
         if(await _unitOfWork.CompanyRepository.UserHaveCompany(user.Id))
             return BadRequest("You already have registered company");
@@ -65,12 +79,12 @@ public class CompanyController : ControllerBase
         await _unitOfWork.CompanyRepository.AddAsync(company);
         await _unitOfWork.CompleteAsync();
 
-        return Ok(company);
+        return Ok($"Company {company.Name} created");
     }
 
     [HttpPut]
     [Route("edit")]
-    public async Task<IActionResult> EditCompany(CompanyDto request)
+    public async Task<IActionResult> EditCompany(CompanyRequest request)
     {
         var userId = _userService.GetUserId();
         var company = await _unitOfWork.CompanyRepository.GetFirstAsync(c => c.AdminId == userId);
@@ -90,7 +104,7 @@ public class CompanyController : ControllerBase
 
         await _unitOfWork.CompleteAsync();
 
-        return Ok(company);
+        return Ok($"Company {company.Name} data updated");
     }
 
     [HttpDelete]
@@ -104,6 +118,6 @@ public class CompanyController : ControllerBase
         await _unitOfWork.CompanyRepository.DeleteAsync(company);
         await _unitOfWork.CompleteAsync();
 
-        return Ok(company);
+        return Ok($"Company {company.Name} deleted");
     }
 }

@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Apex.Models.Dto
+namespace Apex.Models.RequestDto
 {
-    public class EmailDto
+    public class EmailRequest
     {
         [Required, EmailAddress]
         public string To { get; set; } = string.Empty;

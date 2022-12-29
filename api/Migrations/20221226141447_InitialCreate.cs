@@ -66,9 +66,11 @@ namespace Apex.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
-                    VerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VerificationTokenHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    VerificationTokenSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordResetTokenHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    PasswordResetTokenSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     ResetTokenExpires = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CompanyId = table.Column<int>(type: "int", nullable: true)
                 },

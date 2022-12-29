@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Apex.Models.Entities
+namespace Apex.Models.ResponseDto
 {
-    public class User
+    public class UserResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -20,7 +18,5 @@ namespace Apex.Models.Entities
         public byte[]? PasswordResetTokenSalt { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
         public int? CompanyId { get; set; }
-        [ForeignKey("CompanyId")]
-        public Company? Company { get; set; }
     }
 }

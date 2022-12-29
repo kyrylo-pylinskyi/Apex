@@ -1,6 +1,6 @@
-namespace Apex.Models.Dto
+namespace Apex.Models.RequestDto
 {
-    public class EmployeeDto
+    public class EmployeeRequest
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

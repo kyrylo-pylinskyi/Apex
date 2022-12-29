@@ -1,10 +1,12 @@
-using Apex.Repository.Base;
+using Apex.Models.ResponseDto;
 
 namespace Apex.Repository.CompanyRepo
 {
     public interface ICompanyRepository : IBaseRepository<Company>
     {
-        Task<Company> FindByAdminId(int id);
+        Task<CompanyResponse> GetCompanyById(int id);
+        Task<IEnumerable<CompanyResponse>> GetCompanies();
+        Task<CompanyResponse> FindByAdminId(int id);
         Task<bool> UserHaveCompany(int id);
         Task<bool> NameReserved(string name);
         Task<bool> EmailReserved(string email);

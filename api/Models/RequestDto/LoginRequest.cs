@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace Apex.Models.Requests
+namespace Apex.Models.RequestDto
 {
     public class LoginRequest
     {

@@ -1,10 +1,12 @@
-using Apex.Repository.Base;
+using Apex.Models.ResponseDto;
 
 namespace Apex.Repository.PostRepo
 {
     public interface IEmployeeRepository : IBaseRepository<Employee>
     {
         Task<bool> NameReserved(string fullName);
-        Task<IEnumerable<Employee>> GetCompanyEmployees(int companyId);
+        Task<IEnumerable<EmployeeResponse>> GetEmployees();
+        Task<IEnumerable<EmployeeResponse>> GetCompanyEmployees(int companyId);
+        Task<EmployeeResponse> GetEmployeeById(int id);
     }
 }

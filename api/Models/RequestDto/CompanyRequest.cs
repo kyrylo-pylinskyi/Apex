@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace Apex.Models.Dto
+namespace Apex.Models.RequestDto
 {
-    public class CompanyDto
+    public class CompanyRequest
     {
         [Required]
         public string Name { get; set; }

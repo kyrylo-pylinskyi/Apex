@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Apex.Repository.Base;
-using Apex.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
-using Apex.Models.Dto;
+using Apex.Models.RequestDto;
 
 namespace Apex.Controllers;
 
@@ -21,10 +20,17 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> GetEmployeeById(int id)
+    {
+        return Ok(await _unitOfWork.EmployeeRepository.GetEmployeeById(id));
+    }
+
+    [HttpGet]
     [Route("list")]
     public async Task<IActionResult> GetEmployees()
     {
-        return Ok(await _unitOfWork.EmployeeRepository.GetManyAsync());
+        return Ok(await _unitOfWork.EmployeeRepository.GetEmployees());
     }
 
     [HttpGet]
@@ -32,20 +38,34 @@ public class EmployeeController : ControllerBase
     public async Task<IActionResult> GetMyEmployees()
     {
         string userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
 
-        var employees = await _unitOfWork.EmployeeRepository.GetCompanyEmployees(company.Id);
+        var companyId = Convert.ToInt32(company.Id);
+        var employees = await _unitOfWork.EmployeeRepository.GetCompanyEmployees(companyId);
 
-        return Ok(employees.ToList());
+        return Ok(employees);
+    }
+
+    [HttpGet]
+    [Route("company/{id}")]
+    public async Task<IActionResult> GetCompanyEmployees(int id)
+    {
+        var company = await _unitOfWork.CompanyRepository.GetByIdAsync(id);
+
+        var companyId = Convert.ToInt32(company.Id);
+
+        var employees = await _unitOfWork.EmployeeRepository.GetCompanyEmployees(companyId);
+
+        return Ok(employees);
     }
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateEmployee(EmployeeDto request)
+    public async Task<IActionResult> CreateEmployee(EmployeeRequest request)
     {
         string userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
 
         if (company is null)
@@ -58,9 +78,10 @@ public class EmployeeController : ControllerBase
             BirthDate = request.BirthDate,
             Job = request.Job,
             EmployedAt = request.EmployedAt,
-            CompanyId = company.Id,
-            Company = company
+            CompanyId = Convert.ToInt32(company.Id),
         };
+
+
 
         await _unitOfWork.EmployeeRepository.AddAsync(employee);
         await _unitOfWork.CompleteAsync();
@@ -70,10 +91,10 @@ public class EmployeeController : ControllerBase
 
     [HttpPut]
     [Route("edit/{id}")]
-    public async Task<IActionResult> EditEmployee(int id, EmployeeDto request)
+    public async Task<IActionResult> EditEmployee(int id, EmployeeRequest request)
     {
         string userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
 
         var employee = await _unitOfWork.EmployeeRepository.GetFirstAsync(e => e.Id == id);
@@ -88,12 +109,9 @@ public class EmployeeController : ControllerBase
         employee.Job = request.Job;
         employee.EmployedAt = request.EmployedAt;
 
-        var employees = await _unitOfWork.EmployeeRepository.GetCompanyEmployees(company.Id);
-        company.Employees = employees.ToList();
-
         await _unitOfWork.CompleteAsync();
         
-        return Ok($"Employee {employee.FullName} Info updated successfully");
+        return Ok($"Employee {employee.FullName} data updated successfully");
     }
 
     [HttpDelete]
@@ -101,7 +119,7 @@ public class EmployeeController : ControllerBase
     public async Task<IActionResult>DeleteEmployee(int id)
     {
         string userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
 
         var employee = await _unitOfWork.EmployeeRepository.GetFirstAsync(e => e.Id == id);

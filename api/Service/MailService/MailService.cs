@@ -2,7 +2,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
-using Apex.Models.Dto;
+using Apex.Models.RequestDto;
 
 namespace Apex.Service.MailService
 {
@@ -15,7 +15,7 @@ namespace Apex.Service.MailService
             _config = config;
         }
 
-        public void SendMail(EmailDto request)
+        public void SendMail(EmailRequest request)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("MailService:EmailUsername").Value));

@@ -187,8 +187,11 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("PasswordResetToken")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordResetTokenHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordResetTokenSalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
@@ -204,8 +207,11 @@ namespace Apex.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
-                    b.Property<string>("VerificationToken")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("VerificationTokenHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("VerificationTokenSalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("datetime2");

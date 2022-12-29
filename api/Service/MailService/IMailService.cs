@@ -1,9 +1,9 @@
-using Apex.Models.Dto;
+using Apex.Models.RequestDto;
 
 namespace Apex.Service.MailService
 {
     public interface IMailService
     {
-        void SendMail(EmailDto request);
+        void SendMail(EmailRequest request);
     }
 }

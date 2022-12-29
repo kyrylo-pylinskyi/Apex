@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace Apex.Models.Dto
+namespace Apex.Models.RequestDto
 {
-    public class PostDto
+    public class PostRequest
     {
         [Required]
         public string Title { get; set; }

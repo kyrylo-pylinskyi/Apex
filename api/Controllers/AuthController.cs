@@ -1,14 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Apex.Repository.Base;
-using Apex.Models.Dto;
-using Apex.Models;
 using System.Security.Cryptography;
-using Apex.Service.MailService;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Apex.Models.Requests;
+using Apex.Models.RequestDto;
+using Apex.Models.ResponseDto;
 
 namespace Apex.Controllers;
 
@@ -36,9 +33,14 @@ public class AuthController : ControllerBase
         if (await _unitOfWork.UserRepository.MailReserved(request.Email))
             return BadRequest("Email Reserved");
 
-        CreatePasswordHash(request.Password,
+        CreateHash(request.Password,
                         out byte[] passwordHash,
                         out byte[] passwordSalt);
+
+        var verificationToken = CreateRandomToken();
+        CreateHash(verificationToken,
+                        out byte[] verificationTokenHash,
+                        out byte[] verificationTokenSalt);
 
         var user = new User
         {
@@ -49,22 +51,24 @@ public class AuthController : ControllerBase
             PasswordSalt = passwordSalt,
             IsActive = false,
             CreatedAt = DateTime.Now,
-            VerificationToken = CreateRandomToken(),
+            VerificationTokenHash = verificationTokenHash,
+            VerificationTokenSalt = verificationTokenSalt,
             Role = Roles.Client,
         };
 
         await _unitOfWork.UserRepository.AddAsync(user);
         await _unitOfWork.CompleteAsync();
 
-        var message = new EmailDto
+        var message = new EmailRequest
         {
             To = user.Email,
             Subject = "Apex Email Verification Code",
             Body = $"<h2> Hello {user.Name}</h2>" + 
                     "<p>You can actvate you Apex account with this link</p>" +
-                    $"<b>{user.VerificationToken}</b><br/>" +
-                    $"<a href=\"https://localhost:3000/confirm-email/{user.VerificationToken}\">" + 
-                    "Verify </a>"
+                    $"<b>{verificationToken}</b><br/>" +
+                    "<button>" +
+                    $"<a href=\"https://localhost:3000/confirm-email/{verificationToken}\">" + 
+                    "Verify </a> </button>"
         };
 
         _mailService.SendMail(message);
@@ -76,14 +80,14 @@ public class AuthController : ControllerBase
     [Route("login")]
     public async Task<ActionResult<string>> Login(LoginRequest request)
     {
-        var user = await _unitOfWork.UserRepository.FindByMail(request.Email);
+        var user = await _unitOfWork.UserRepository.FindByEmail(request.Email);
         if (user is null)
             return BadRequest("User not found.");
 
         if (!user.IsActive || user.VerifiedAt is null)
             return BadRequest("Email address is not activated");
 
-        if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+        if (!VerifyHash(request.Password, user.PasswordHash, user.PasswordSalt))
             return BadRequest("Wrong password.");
 
         string token = CreateToken(user);
@@ -92,16 +96,18 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("verify-email/{token}")]
-    public async Task<IActionResult> Verify(string token)
+    [Route("verify-email/{email}/{token}")]
+    public async Task<IActionResult> VerifyEmail(string email, string token)
     {
-        var user = await _unitOfWork.UserRepository.FindByToken(token);
-        if (user is null)
+        var user = await _unitOfWork.UserRepository.FindByEmail(email);
+        var tokenValid = VerifyHash(token, user.VerificationTokenHash, user.VerificationTokenSalt);
+        if (!tokenValid)
             return BadRequest("Invalid token");
 
         user.IsActive = true;
         user.VerifiedAt = DateTime.Now;
-        user.VerificationToken = null;
+        user.VerificationTokenSalt = null;
+        user.VerificationTokenHash = null;
         await _unitOfWork.CompleteAsync();
 
         return Ok($"email address: {user.Email} - verified");
@@ -111,20 +117,24 @@ public class AuthController : ControllerBase
     [Route("forgot-password")]
     public async Task<IActionResult> ForgotPassword(string email)
     {
-        var user = await _unitOfWork.UserRepository.FindByMail(email);
+        var user = await _unitOfWork.UserRepository.FindByEmail(email);
 
         if (user is null)
             return BadRequest("User not found");
 
-        user.PasswordResetToken = CreateRandomToken();
+        var passwordResetToken = CreateRandomToken();
+        CreateHash(passwordResetToken, out byte[] passwordResetTokenHash, out byte[] passwordResetTokenSalt);
+
+        user.PasswordResetTokenSalt = passwordResetTokenSalt;
+        user.PasswordResetTokenHash = passwordResetTokenHash;
         user.ResetTokenExpires = DateTime.Now.AddDays(1);
         await _unitOfWork.CompleteAsync();
 
-        var message = new EmailDto
+        var message = new EmailRequest
         {
             To = user.Email,
             Subject = "Apex Email Verification Code",
-            Body = $"Your Reset Password Token: <br> {user.PasswordResetToken}"
+            Body = $"Your Reset Password Token: <br> {passwordResetToken}"
         };
 
         _mailService.SendMail(message);
@@ -136,15 +146,16 @@ public class AuthController : ControllerBase
     [Route("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
     {
-        var user = await _unitOfWork.UserRepository.FindByResetPasswordToken(request.Token);
+        var user = await _unitOfWork.UserRepository.FindByEmail(request.Email);
         if (user is null || user.ResetTokenExpires < DateTime.Now)
             return BadRequest("Invalid Token.");
         
-        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        CreateHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
-        user.PasswordResetToken = null;
+        user.PasswordResetTokenHash = null;
+        user.PasswordResetTokenSalt = null;
         user.ResetTokenExpires = null;
 
         await _unitOfWork.CompleteAsync();
@@ -158,21 +169,29 @@ public class AuthController : ControllerBase
     public ActionResult GetMe() => Ok(_userService.GetMe());
 
 
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    private void CreateHash(string value, out byte[] hash, out byte[] salt)
     {
         using (var hmac = new HMACSHA512())
         {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            salt = hmac.Key;
+            hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(value));
+        }
+    }
+    private bool VerifyHash(string value, byte[] hash, byte[] salt)
+    {
+        using (var hmac = new HMACSHA512(salt))
+        {
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(value));
+            return computedHash.SequenceEqual(hash);
         }
     }
 
-    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    private byte[] GetHash(string value, byte[] salt)
     {
-        using (var hmac = new HMACSHA512(passwordSalt))
+        using (var hmac = new HMACSHA512(salt))
         {
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(passwordHash);
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(value));
+            return computedHash;
         }
     }
 

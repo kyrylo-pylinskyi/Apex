@@ -1,7 +1,6 @@
 import React, { Component, useEffect } from "react";
 import { FormField, TextInputField, Button } from "evergreen-ui";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 export class LoginForm extends Component {
   state = {
@@ -21,7 +20,7 @@ export class LoginForm extends Component {
         password: this.state.password,
       })
       .then((response) => {
-        this.setState({ token: `Bearer ${response.data}` });
+        this.setState({ token: response.data });
         console.log(JSON.stringify(this.state.token));
         localStorage.setItem("access_token", JSON.stringify(this.state.token));
         axios.defaults.headers.common[
@@ -39,15 +38,17 @@ export class LoginForm extends Component {
     //   "Authorization"
     // ] = `Bearer ${localStorage.getItem("access_token")}`;
     axios
-      .post(`https://localhost:4000/api/Auth/get-me`, null,{
+      .post(`https://localhost:4000/api/Auth/get-me`, { }, {
         headers: {
           'Authorization': `Bearer ${this.state.token}`,
+          // 'Content-Type': 'application/json'
         }
       })
       .then((response) => {
         console.log(response.data);
       })
       .catch((error) => {
+        console.log("token", this.state.token);
         console.log(error);
       });
   };

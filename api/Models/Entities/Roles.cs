@@ -4,6 +4,7 @@ namespace Apex.Models.Entities
     {
         Guest,
         Client,
+        Employee,
         Admin
     }
 }

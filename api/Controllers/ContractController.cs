@@ -18,10 +18,49 @@ public class ContractController : ControllerBase
     }
 
     [HttpGet]
-    [Route("list")]
-    public async Task<IActionResult> GetContract()
+    [Route("{id}")]
+    public async Task<IActionResult> GetContractById(int id)
     {
-        return Ok(await _unitOfWork.ContractRepository.GetManyAsync());
+        return Ok(await _unitOfWork.ContractRepository.GetContractById(id));
+    }
+
+    [HttpGet]
+    [Route("list")]
+    public async Task<IActionResult> GetContracts()
+    {
+        return Ok(await _unitOfWork.ContractRepository.GetContracts());
+    }
+
+    [HttpGet]
+    [Route("my-contracts")]
+    public async Task<IActionResult> GetMyContracts()
+    {
+        var userId = _userService.GetUserId();
+        return Ok(await _unitOfWork.ContractRepository.GetUserContracts(userId));
+    }
+
+    [HttpGet]
+    [Route("user/{id}")]
+    public async Task<IActionResult> GetMyContracts(int id)
+    {
+        return Ok(await _unitOfWork.ContractRepository.GetUserContracts(id));
+    }
+
+    [HttpGet]
+    [Route("my-company-contracts")]
+    public async Task<IActionResult> GetMyComapanyContracts()
+    {
+        var userId = _userService.GetUserId();
+        var company = await _unitOfWork.CompanyRepository.FindByAdminId(userId);
+        var companyId = Convert.ToInt32(company.Id);
+        return Ok(await _unitOfWork.ContractRepository.GetCompanyContracts(companyId));
+    }
+
+    [HttpGet]
+    [Route("company/{id}")]
+    public async Task<IActionResult> GetComapanyContracts(int id)
+    {
+        return Ok(await _unitOfWork.ContractRepository.GetCompanyContracts(id));
     }
 
     [HttpPost]
@@ -29,7 +68,7 @@ public class ContractController : ControllerBase
     public async Task<IActionResult> CreateContract(int postId)
     {
         var userEmail = _userService.GetUserEmail();
-        var user = await _unitOfWork.UserRepository.FindByMail(userEmail);
+        var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
         var post = await _unitOfWork.PostRepository.GetFirstAsync(p => p.Id == postId);
         var author = await _unitOfWork.UserRepository.GetByIdAsync(post.CreatorId);
@@ -39,9 +78,7 @@ public class ContractController : ControllerBase
             CreatedAt = DateTime.Now,
             IsActive = false,
             PostId = postId,
-            Post = post,
-            CompanyId = company.Id,
-            Company = company
+            CompanyId = Convert.ToInt32(company.Id)
         };
 
         await _unitOfWork.ContractRepository.AddAsync(contract);
