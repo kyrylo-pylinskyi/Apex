@@ -26,12 +26,22 @@ public class AuthController : ControllerBase
         _userService = userService;
     }
 
+    [HttpGet]
+    [Route("mail-valid/{email}")]
+    public async Task<IActionResult> IsMailReserved(string email)
+    {
+        bool reserved = await _unitOfWork.UserRepository.MailReserved(email);
+        if (reserved)
+            return Ok(false);
+        return Ok(true);
+    }
+
     [HttpPost]
     [Route("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         if (await _unitOfWork.UserRepository.MailReserved(request.Email))
-            return BadRequest("Email Reserved");
+            return Ok("Email address Reserved");
 
         CreateHash(request.Password,
                         out byte[] passwordHash,
@@ -63,12 +73,9 @@ public class AuthController : ControllerBase
         {
             To = user.Email,
             Subject = "Apex Email Verification Code",
-            Body = $"<h2> Hello {user.Name}</h2>" + 
-                    "<p>You can actvate you Apex account with this link</p>" +
-                    $"<b>{verificationToken}</b><br/>" +
-                    "<button>" +
-                    $"<a href=\"https://localhost:3000/confirm-email/{verificationToken}\">" + 
-                    "Verify </a> </button>"
+            Body = $"<h2> Hello {user.Name}</h2>" +
+                    "<p>You can actvate you Apex account with this token</p>" +
+                    $"<b>{verificationToken}</b><br/>"
         };
 
         _mailService.SendMail(message);
@@ -96,11 +103,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("verify-email/{email}/{token}")]
-    public async Task<IActionResult> VerifyEmail(string email, string token)
+    [Route("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromForm] VerifyEmailRequest request)
     {
-        var user = await _unitOfWork.UserRepository.FindByEmail(email);
-        var tokenValid = VerifyHash(token, user.VerificationTokenHash, user.VerificationTokenSalt);
+        var user = await _unitOfWork.UserRepository.FindByEmail(request.Email);
+        var tokenValid = VerifyHash(request.Token, user.VerificationTokenHash, user.VerificationTokenSalt);
         if (!tokenValid)
             return BadRequest("Invalid token");
 
@@ -114,7 +121,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("forgot-password")]
+    [Route("forgot-password/{email}")]
     public async Task<IActionResult> ForgotPassword(string email)
     {
         var user = await _unitOfWork.UserRepository.FindByEmail(email);
@@ -139,17 +146,17 @@ public class AuthController : ControllerBase
 
         _mailService.SendMail(message);
 
-        return Ok($"You may now reset your password.");
+        return Ok($"We sent reset password token to your mail box. You may now reset your password.");
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
     {
         var user = await _unitOfWork.UserRepository.FindByEmail(request.Email);
         if (user is null || user.ResetTokenExpires < DateTime.Now)
             return BadRequest("Invalid Token.");
-        
+
         CreateHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
         user.PasswordHash = passwordHash;
@@ -163,10 +170,15 @@ public class AuthController : ControllerBase
         return Ok("Password successfully reset.");
     }
 
-    [HttpPost]
+    [HttpGet]
     [Authorize]
     [Route("get-me")]
-    public ActionResult GetMe() => Ok(_userService.GetMe());
+    public async Task<ActionResult> GetMe()
+    {
+        var userId = _userService.GetUserId();
+        var user = await _unitOfWork.UserRepository.GetUserDetails(userId);
+        return Ok(user);
+    }
 
 
     private void CreateHash(string value, out byte[] hash, out byte[] salt)

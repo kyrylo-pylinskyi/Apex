@@ -11,14 +11,18 @@ namespace Apex.Repository.PostRepo
         }
 
         public async Task<IEnumerable<PostResponse>> GetPosts(){
-            var posts = await GetManyAsync();
+            var posts = await GetManyAsync(includeProperties:"Creator");
             return posts.Select(p => new PostResponse(){
                 Id = p.Id,
                 Title = p.Title,
                 Content = p.Content,
-                CreatedAt = p.CreatedAt,
-                CreatorId = p.CreatorId
-            });
+                CreatedAt = $"{p.CreatedAt.ToShortDateString()} {p.CreatedAt.ToShortTimeString()}",
+                CreatorId = p.CreatorId,
+                Image = p.Image is not null ? Convert.ToBase64String(p.Image) : string.Empty,
+                CreatorName = p.Creator.Name,
+                CreatorPhoto = p.Creator.Avatar is not null ? Convert.ToBase64String(p.Creator.Avatar) : string.Empty,
+
+            }).OrderByDescending(f => f.CreatedAt);
         }
 
         public async Task<PostResponse> GetPostById(int id){
@@ -27,20 +31,24 @@ namespace Apex.Repository.PostRepo
                 Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
-                CreatedAt = post.CreatedAt,
-                CreatorId = post.CreatorId
+                CreatedAt = $"{post.CreatedAt.ToShortDateString()} {post.CreatedAt.ToShortTimeString()}",
+                CreatorId = post.CreatorId,
+                Image = post.Image is not null ? Convert.ToBase64String(post.Image) : string.Empty,
             };
         }
 
         public async Task<IEnumerable<PostResponse>> GetUserPosts(int id){
-            var posts = await GetManyAsync(p => p.CreatorId == id);
+            var posts = await GetManyAsync(p => p.CreatorId == id, includeProperties:"Creator");
             return posts.Select(p => new PostResponse(){
                 Id = p.Id,
                 Title = p.Title,
                 Content = p.Content,
-                CreatedAt = p.CreatedAt,
-                CreatorId = p.CreatorId
-            });
+                CreatedAt = $"{p.CreatedAt.ToShortDateString()} {p.CreatedAt.ToShortTimeString()}",
+                CreatorId = p.CreatorId,
+                Image = p.Image is not null ? Convert.ToBase64String(p.Image) : string.Empty,
+                CreatorName = p.Creator.Name,
+                CreatorPhoto = p.Creator.Avatar is not null ? Convert.ToBase64String(p.Creator.Avatar) : string.Empty,
+            }).OrderByDescending(f => f.CreatedAt);;
         }
     }
 }

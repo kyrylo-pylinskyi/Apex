@@ -32,6 +32,9 @@ namespace Apex.Repository.CompanyRepo
         }
         public async Task<CompanyResponse> FindByAdminId(int id){
             var company = await GetFirstAsync(c => c.AdminId == id);
+            if(company is null){
+                return null;
+            }
             return new CompanyResponse(){
                 Id = company.Id,
                 Name = company.Name,

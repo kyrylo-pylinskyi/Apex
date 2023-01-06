@@ -17,8 +17,22 @@ namespace Apex.Repository.UserRepo
         public async Task<User> FindById(int id) =>
             await GetByIdAsync(id);
 
+        public async Task<UserResponse> GetUserDetails(int id)
+        {
+            var user = await GetByIdAsync(id);
+            return new UserResponse()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Avatar = user.Avatar is not null ? Convert.ToBase64String(user.Avatar) : string.Empty,
+                Role = user.Role
+            };
+        }
+
         public async Task<User> FindByEmail(string email) =>
             await GetFirstAsync(u => u.Email.Equals(email));
-            
+
     }
 }

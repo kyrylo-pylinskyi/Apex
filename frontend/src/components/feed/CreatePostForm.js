@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { FormField, TextInputField, Button } from "evergreen-ui";
+import {
+  FormField,
+  TextInputField,
+  Button,
+  Pane,
+  Label,
+  Textarea,
+} from "evergreen-ui";
 import axios from "axios";
 
 export class CreatePostForm extends Component {
   state = {
     title: "",
     content: "",
+    image: "",
     ValidationMessage: {
       title: "",
       content: "",
@@ -20,6 +28,10 @@ export class CreatePostForm extends Component {
     });
   };
 
+  handleFileSelect = (event) => {
+    this.state.image = event.target.files[0];
+  };
+
   validateField = (fieldName, value) => {
     let ErrorMessages = this.state.ValidationMessage;
     let titleValid = this.state.titleValid;
@@ -32,7 +44,7 @@ export class CreatePostForm extends Component {
       case "content":
         contentValid =
           value.length >= 10 && value.length <= 300 && value !== null;
-          ErrorMessages.content = contentValid
+        ErrorMessages.content = contentValid
           ? ""
           : "content must be more than 10 characters and less than 300";
         break;
@@ -61,13 +73,13 @@ export class CreatePostForm extends Component {
   };
 
   createPost = () => {
+    let formData = new FormData();
+    formData.append("Title", this.state.title)
+    formData.append("Content", this.state.content)
+    formData.append("FormFile", this.state.image)
     axios
       .post(
-        `${process.env.REACT_APP_SERVER}/Post/create`,
-        {
-          title: this.state.title,
-          content: this.state.content,
-        },
+        `${process.env.REACT_APP_SERVER}/Post/create`, formData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -76,38 +88,49 @@ export class CreatePostForm extends Component {
         }
       )
       .then((response) => {
-        console.log(response.data);
+        this.props.backToFeed();
+        alert(response.data);
       })
       .catch((error) => {
+        console.log("formFile", formData)
         console.log(error);
       });
   };
 
   render() {
+    console.log(this.props.post);
+    const { backToFeed } = this.props;
     return (
       <>
-        <FormField>
-          <TextInputField
-            label="Post title"
-            required
-            placeholder="title"
-            onChange={this.handleChange("title")}
-            defaultValue={this.state.title}
-          />
-          <i>{this.state.ValidationMessage.title}</i>
-          <br />
-          <TextInputField
-            label="Post content"
-            required
-            placeholder="content"
-            onChange={this.handleChange("content")}
-            defaultValue={this.state.content}
-          />
-          <i>{this.state.ValidationMessage.content}</i>
-          <br />
-          {this.state.renderButton}
-        </FormField>
-        {this.renderButton()}
+        <div class="post-editor">
+          <FormField>
+            <TextInputField
+              label="Post title"
+              required
+              placeholder="title"
+              onChange={this.handleChange("title")}
+              defaultValue={this.state.title}
+            />
+            <i>{this.state.ValidationMessage.title}</i>
+            <br />
+            <Pane>
+              <Label htmlFor="textarea-2" marginBottom={4} display="block">
+                Post content
+              </Label>
+              <Textarea
+                id="textarea-2"
+                placeholder="Your message..."
+                onChange={this.handleChange("content")}
+                defaultValue={this.state.content}
+              />
+            </Pane>
+            <i>{this.state.ValidationMessage.content}</i>
+            <br />
+            <input type="file" onChange={this.handleFileSelect} />
+            <Button onClick={backToFeed}>Back</Button>
+            {this.renderButton()}
+          </FormField>
+        </div>
       </>
     );
   }

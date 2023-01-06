@@ -8,5 +8,6 @@ namespace Apex.Repository.UserRepo
         Task<bool> MailReserved(string mail);
         Task<User> FindById(int id);
         Task<User> FindByEmail(string email);
+        Task<UserResponse> GetUserDetails(int id);
     }
 }

@@ -7,25 +7,14 @@ export default function Navbar() {
   const [tokenIsActive, setTokenIsActive] = useState();
   const [user, setUser] = useState();
 
-  useEffect(() => {
-    setTokenIsActive(validateToken());
-    if (tokenIsActive) {
-      //fetchUserDetails()
-    }
-  }, []);
-
   const fetchUserDetails = () => {
     axios
-      .post(
-        `${process.env.REACT_APP_SERVER}Auth/get-me`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            // 'Content-Type': 'application/json'
-          },
-        }
-      )
+      .get(`${process.env.REACT_APP_SERVER}/Auth/get-me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          // 'Content-Type': 'application/json'
+        },
+      })
       .then((response) => {
         setUser(response.data);
       })
@@ -34,34 +23,40 @@ export default function Navbar() {
       });
   };
 
-  switch (tokenIsActive) {
-    case true:
-      return (
-        <nav className="nav">
-          <Link to="/" className="site-title">
-            Apex
-          </Link>
-          <ul>
-            <CustomLink to="/feed">Feed</CustomLink>
-            <CustomLink to="/about">About</CustomLink>
-            <CustomLink to={"/"} onClick={logout}>Logout</CustomLink>
-            <CustomLink to="/profile">user.name</CustomLink>
-          </ul>
-        </nav>
-      );
-    case false:
-      return (
-        <nav className="nav">
-          <Link to="/" className="site-title">
-            Apex
-          </Link>
-          <ul>
-            <CustomLink to="/about">About</CustomLink>
-            <CustomLink to="/register">Register</CustomLink>
-            <CustomLink to="/login">Login</CustomLink>s
-          </ul>
-        </nav>
-      );
+  useEffect(() => {
+    setTokenIsActive(validateToken());
+    fetchUserDetails();
+  }, []);
+
+  if (tokenIsActive) {
+    return (
+      <nav className="nav">
+        <Link to="/" className="site-title">
+          Apex
+        </Link>
+        <ul>
+          <CustomLink to="/feed">Feed</CustomLink>
+          <CustomLink to="/about">About</CustomLink>
+          <CustomLink to={"/"} onClick={logout}>
+            Logout
+          </CustomLink>
+          {user && <CustomLink to="/profile">{user.name}</CustomLink>}
+        </ul>
+      </nav>
+    );
+  } else {
+    return (
+      <nav className="nav">
+        <Link to="/" className="site-title">
+          Apex
+        </Link>
+        <ul>
+          <CustomLink to="/about">About</CustomLink>
+          <CustomLink to="/register">Register</CustomLink>
+          <CustomLink to="/login">Login</CustomLink>
+        </ul>
+      </nav>
+    );
   }
 }
 

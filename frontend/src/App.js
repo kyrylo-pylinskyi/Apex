@@ -7,21 +7,22 @@ import { Route, Routes } from "react-router-dom";
 import About from "./pages/About";
 import Feed from "./pages/Feed";
 import CreatePost from "./pages/CreatePost";
+import Profile from "./pages/Profile";
 
 function App() {
-  console.log(process.env.REACT_APP_SERVER)
   return (
     <>
       <Navbar />
       <div className="container">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<About />} />
           <Route path="/about" element={<About />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/confirm-email" element={<ConfirmEmail />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </>

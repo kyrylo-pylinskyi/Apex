@@ -61,22 +61,23 @@ export class RegisterForm extends Component {
         confirmPassword: this.state.confirmPassword,
       })
       .then(function (response) {
-        console.log(response);
+        alert(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        alert(error);
       });
 
     this.nextStep();
   };
 
   verify = () => {
+    let formData = new FormData();
+    formData.append("Email", this.state.email);
+    formData.append("Token", this.state.verificationCode)
     axios
-      .post(
-        `${process.env.REACT_APP_SERVER}/Auth/verify-email/${this.state.verificationCode}`
-      )
+      .post(`${process.env.REACT_APP_SERVER}/Auth/verify-email`, formData)
       .then(function (response) {
-        console.log(response);
+        alert(response.data);
       })
       .catch(function (error) {
         console.log(error);
