@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Apex.Models.RequestDto;
 
 namespace Apex.Controllers;
 
@@ -65,19 +66,21 @@ public class ContractController : ControllerBase
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateContract(int postId)
+    public async Task<IActionResult> CreateContract([FromForm] ContractRequest request)
     {
         var userEmail = _userService.GetUserEmail();
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
-        var post = await _unitOfWork.PostRepository.GetFirstAsync(p => p.Id == postId);
+        var post = await _unitOfWork.PostRepository.GetFirstAsync(p => p.Id == request.PostId);
         var author = await _unitOfWork.UserRepository.GetByIdAsync(post.CreatorId);
 
         var contract = new Contract{
             Name = $"{post.Title} Contract between {company.Name} and {author.Name}",
             CreatedAt = DateTime.Now,
             IsActive = false,
-            PostId = postId,
+            PostId = request.PostId,
+            Price = request.Price,
+            Comment = request.Comment,
             CompanyId = Convert.ToInt32(company.Id)
         };
 
@@ -95,7 +98,7 @@ public class ContractController : ControllerBase
         contract.IsActive = true;
         await _unitOfWork.CompleteAsync();
 
-        return Ok();
+        return Ok("Contract is active now");
     }
 
     [HttpPut]
@@ -106,7 +109,7 @@ public class ContractController : ControllerBase
         contract.IsActive = false;
         await _unitOfWork.CompleteAsync();
 
-        return Ok();
+        return Ok("Contract is closed now");
     }
 
     [HttpDelete]
@@ -116,6 +119,6 @@ public class ContractController : ControllerBase
         var contract = await _unitOfWork.ContractRepository.GetByIdAsync(id);
         await _unitOfWork.ContractRepository.DeleteAsync(contract);
         await _unitOfWork.CompleteAsync();
-        return Ok();
+        return Ok("Contract deleted");
     }
 }

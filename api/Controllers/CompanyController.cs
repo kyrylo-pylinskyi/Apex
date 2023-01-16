@@ -53,7 +53,7 @@ public class CompanyController : ControllerBase
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateCompany(CompanyRequest request)
+    public async Task<IActionResult> CreateCompany([FromForm] CompanyRequest request)
     {
         var userEmail = _userService.GetUserEmail();
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
@@ -73,8 +73,22 @@ public class CompanyController : ControllerBase
             Email = request.Email,
             Phone = request.Phone,
             Location = request.Location,
-            AdminId = user.Id
+            AdminId = user.Id,
+            About = request.About,
+            Website = request.Website
         };
+
+        if (request.Photo is not null)
+        {
+            byte[] imageData = null;
+            // считываем переданный файл в массив байтов
+            using (var binaryReader = new BinaryReader(request.Photo.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)request.Photo.Length);
+            }
+            // установка массива байтов
+            company.Photo = imageData;
+        }
 
         await _unitOfWork.CompanyRepository.AddAsync(company);
         await _unitOfWork.CompleteAsync();
@@ -84,7 +98,7 @@ public class CompanyController : ControllerBase
 
     [HttpPut]
     [Route("edit")]
-    public async Task<IActionResult> EditCompany(CompanyRequest request)
+    public async Task<IActionResult> EditCompany([FromForm] CompanyRequest request)
     {
         var userId = _userService.GetUserId();
         var company = await _unitOfWork.CompanyRepository.GetFirstAsync(c => c.AdminId == userId);
@@ -101,6 +115,20 @@ public class CompanyController : ControllerBase
         company.Phone = request.Phone;
         company.Location = request.Location;
         company.AdminId = userId;
+        company.About = request.About;
+        company.Website = request.Website;
+
+        if (request.Photo is not null)
+        {
+            byte[] imageData = null;
+            // считываем переданный файл в массив байтов
+            using (var binaryReader = new BinaryReader(request.Photo.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)request.Photo.Length);
+            }
+            // установка массива байтов
+            company.Photo = imageData;
+        }
 
         await _unitOfWork.CompleteAsync();
 

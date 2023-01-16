@@ -11,15 +11,14 @@ export class VerifyEmail extends Component {
     return (
       <>
         <FormField>
+          <h3>We sent email verification code to your email address</h3>
           <TextInputField
             label="Confirm Email Verification Code"
             required
-            placeholder="123456"
             onChange={handleChange("verificationCode")}
             defaultValue={values.verificationCode}
           />
         </FormField>
-        <i>{formErrors.verificationCode}</i>
         <Button appearance="primary" onClick={this.next}>
           Continue
         </Button>

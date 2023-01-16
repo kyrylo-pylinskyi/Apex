@@ -8,6 +8,10 @@ import About from "./pages/About";
 import Feed from "./pages/Feed";
 import CreatePost from "./pages/CreatePost";
 import Profile from "./pages/Profile";
+import Company from "./pages/Company";
+import MyContracts from "./pages/MyContracts";
+import CompanyContracts from "./pages/CompanyContracts";
+import Companies from "./pages/Companies";
 
 function App() {
   return (
@@ -23,6 +27,10 @@ function App() {
           <Route path="/feed" element={<Feed />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/my-company" element={<Company />} />
+          <Route path="/my-contracts" element={<MyContracts />} />
+          <Route path="/my-company-contracts" element={<CompanyContracts />} />
+          <Route path="/companies-feed" element={<Companies />} />
         </Routes>
       </div>
     </>

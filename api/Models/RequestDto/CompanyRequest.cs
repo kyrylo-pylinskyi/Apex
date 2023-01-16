@@ -11,5 +11,8 @@ namespace Apex.Models.RequestDto
         public string Phone { get; set; }
         [Required]
         public string Location { get; set; }
+        public string Website { get; set; }
+        public string? About { get; set; }
+        public IFormFile? Photo { get; set; }
     }
 }

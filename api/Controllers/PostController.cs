@@ -66,6 +66,7 @@ public class PostController : ControllerBase
         {
             Title = request.Title,
             Content = request.Content,
+            Price = request.Price,
             CreatedAt = DateTime.Now,
             CreatorId = user.Id,
         };
@@ -89,17 +90,30 @@ public class PostController : ControllerBase
     }
 
     [HttpPut]
-    [Route("edit/{id}")]
-    public async Task<IActionResult> EditPost(int id, PostRequest request)
+    [Route("edit")]
+    public async Task<IActionResult> EditPost([FromForm] PostRequest request)
     {
         var userId = _userService.GetUserId();
-        var post = await _unitOfWork.PostRepository.GetFirstAsync(p => p.Id == id);
+        var post = await _unitOfWork.PostRepository.GetFirstAsync(p => p.Id == request.Id);
 
         if (post.CreatorId != userId)
             return BadRequest("You can't edit post of another author");
 
+        post.Price = request.Price;
         post.Title = request.Title;
         post.Content = request.Content;
+
+        if (request.FormFile is not null)
+        {
+            byte[] imageData = null;
+            // считываем переданный файл в массив байтов
+            using (var binaryReader = new BinaryReader(request.FormFile.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)request.FormFile.Length);
+            }
+            // установка массива байтов
+            post.Image = imageData;
+        }
 
         await _unitOfWork.CompleteAsync();
 

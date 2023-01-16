@@ -20,12 +20,15 @@ namespace Apex.Repository.PostRepo
                 FirstName = e.FirstName,
                 LastName = e.LastName,
                 FullName = e.FullName,
-                BirthDate = e.BirthDate,
+                BirthDate = e.BirthDate.ToShortDateString(),
+                Email = e.Email,
+                Phone = e.Phone,
                 Job = e.Job,
                 Salary = e.Salary,
-                EmployedAt = e.EmployedAt,
+                EmployedAt = e.EmployedAt.ToShortDateString(),
                 CompanyId = e.CompanyId,
-                CompanyName = e.Company.Name
+                CompanyName = e.Company.Name,
+                Photo = e.Photo is not null ? Convert.ToBase64String(e.Photo) : string.Empty,
             });
         }
 
@@ -36,12 +39,15 @@ namespace Apex.Repository.PostRepo
                 FirstName = e.FirstName,
                 LastName = e.LastName,
                 FullName = e.FullName,
-                BirthDate = e.BirthDate,
+                Email = e.Email,
+                Phone = e.Phone,
+                BirthDate = e.BirthDate.ToShortDateString(),
                 Job = e.Job,
                 Salary = e.Salary,
-                EmployedAt = e.EmployedAt,
+                EmployedAt = e.EmployedAt.ToShortDateString(),
                 CompanyId = e.CompanyId,
-                CompanyName = e.Company.Name
+                CompanyName = e.Company.Name,
+                Photo = e.Photo is not null ? Convert.ToBase64String(e.Photo) : string.Empty,
             });
         }
 
@@ -53,12 +59,15 @@ namespace Apex.Repository.PostRepo
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 FullName = employee.FullName,
-                BirthDate = employee.BirthDate,
+                Email = employee.Email,
+                Phone = employee.Phone,
+                BirthDate = employee.BirthDate.ToLongDateString(),
                 Job = employee.Job,
                 Salary = employee.Salary,
-                EmployedAt = employee.EmployedAt,
+                EmployedAt = employee.EmployedAt.ToShortDateString(),
                 CompanyId = employee.CompanyId,
-                CompanyName = employee.Company.Name
+                CompanyName = employee.Company.Name,
+                Photo = employee.Photo is not null ? Convert.ToBase64String(employee.Photo) : string.Empty,
             };
         }
     }

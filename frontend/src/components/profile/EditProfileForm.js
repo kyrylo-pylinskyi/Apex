@@ -7,6 +7,7 @@ export class EditProfileForm extends Component {
     name: this.props.user.name,
     phone: this.props.user.phone,
     image: this.props.user.avatar,
+    bio: this.props.user.bio,
     formErrors: {
       name: "",
       phone: "",
@@ -57,6 +58,7 @@ export class EditProfileForm extends Component {
     formData.append("Name", this.state.name);
     formData.append("Phone", this.state.phone);
     formData.append("FormFile", this.state.image);
+    formData.append("Bio", this.state.bio);
     axios
       .put(`${process.env.REACT_APP_SERVER}/Profile/edit`, formData, {
         headers: {
@@ -110,6 +112,13 @@ export class EditProfileForm extends Component {
               defaultValue={this.state.phone}
             />
             <i>{this.state.formErrors.phone}</i>
+            <TextInputField
+              label="Enter your Bio"
+              required
+              placeholder="Some info about me"
+              onChange={this.handleChange("bio")}
+              defaultValue={this.state.bio}
+            />
             <br />
             <input type="file" onChange={this.handleFileSelect} />
             <Button onClick={this.props.backToProfile}>Back</Button>

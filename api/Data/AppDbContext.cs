@@ -13,5 +13,14 @@ namespace Apex.Data
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<Employee> Employees => Set<Employee>();
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Company>()
+                .HasOne(c => c.Admin)
+                .WithOne(a => a.Company)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+        }
+
     }
 }

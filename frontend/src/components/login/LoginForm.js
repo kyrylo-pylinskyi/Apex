@@ -7,7 +7,7 @@ export class LoginForm extends Component {
   state = {
     email: "",
     password: "",
-    logedIn: false
+    logedIn: false,
   };
 
   handleChange = (input) => (e) => {
@@ -22,16 +22,26 @@ export class LoginForm extends Component {
       })
       .then((response) => {
         localStorage.setItem("access_token", response.data);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("access_token")}`;
-        this.setState({logedIn: true});
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${localStorage.getItem("access_token")}`;
+        this.setState({ logedIn: true });
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  resetPassword = () => {
+    this.setState({ page: 1 });
+  };
+
+  back = () => {
+    this.setState({ page: 0 });
+  };
+
   render() {
-    switch(this.state.logedIn) {
+    switch (this.state.logedIn) {
       case false:
         return (
           <FormField>
@@ -54,8 +64,8 @@ export class LoginForm extends Component {
           </FormField>
         );
       case true:
-        window.location.reload(true)
-        return <h2>Welcome!</h2>
+        window.location.reload(true);
+        return <h2>Welcome!</h2>;
     }
   }
 }

@@ -30,6 +30,7 @@ public class ProfileController : ControllerBase
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         user.Name = request.Name;
         user.Phone = request.Phone;
+        user.Bio = request.Bio;
 
         if (request.FormFile is not null)
         {
@@ -45,6 +46,16 @@ public class ProfileController : ControllerBase
 
         await _unitOfWork.CompleteAsync();
         return Ok($"User {user.Email} updated");
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<IActionResult> GetProfileInfo(int id){
+        var user = await _unitOfWork.UserRepository.FindById(id);
+        if(user is null)
+            return BadRequest("User not found");
+        return Ok(user);
     }
 
 }

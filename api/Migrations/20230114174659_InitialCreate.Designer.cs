@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apex.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230105162410_InitialCreate")]
+    [Migration("20230114174659_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace Apex.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("About")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AdminId")
                         .HasColumnType("int");
@@ -51,7 +54,18 @@ namespace Apex.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("Photo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminId")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -63,6 +77,9 @@ namespace Apex.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
@@ -78,6 +95,9 @@ namespace Apex.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -103,7 +123,11 @@ namespace Apex.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("EmployedAt")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EmployedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -118,6 +142,10 @@ namespace Apex.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -155,6 +183,9 @@ namespace Apex.Migrations
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -176,6 +207,9 @@ namespace Apex.Migrations
 
                     b.Property<byte[]>("Avatar")
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
@@ -229,9 +263,18 @@ namespace Apex.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Apex.Models.Entities.Company", b =>
+                {
+                    b.HasOne("Apex.Models.Entities.User", "Admin")
+                        .WithOne("Company")
+                        .HasForeignKey("Apex.Models.Entities.Company", "AdminId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("Apex.Models.Entities.Contract", b =>
@@ -275,20 +318,16 @@ namespace Apex.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("Apex.Models.Entities.User", b =>
-                {
-                    b.HasOne("Apex.Models.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId");
-
-                    b.Navigation("Company");
-                });
-
             modelBuilder.Entity("Apex.Models.Entities.Company", b =>
                 {
                     b.Navigation("Contracts");
 
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Apex.Models.Entities.User", b =>
+                {
+                    b.Navigation("Company");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,6 +5,7 @@ import axios from "axios";
 
 export default function Navbar() {
   const [tokenIsActive, setTokenIsActive] = useState();
+  const [company, setCompany] = useState();
   const [user, setUser] = useState();
 
   const fetchUserDetails = () => {
@@ -23,9 +24,26 @@ export default function Navbar() {
       });
   };
 
+  const fetchUserCompany = () => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          // 'Content-Type': 'application/json'
+        },
+      })
+      .then((response) => {
+        setCompany(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     setTokenIsActive(validateToken());
     fetchUserDetails();
+    fetchUserCompany();
   }, []);
 
   if (tokenIsActive) {
@@ -36,8 +54,12 @@ export default function Navbar() {
         </Link>
         <ul>
           <CustomLink to="/feed">Feed</CustomLink>
+          <CustomLink to="/companies-feed">Companies</CustomLink>
+          <CustomLink to="/my-contracts">My Contracts</CustomLink>
+          <CustomLink to="/my-company-contracts">Company Contracts</CustomLink>
+          {company && <CustomLink to="/my-company">My Company</CustomLink>}
           <CustomLink to="/about">About</CustomLink>
-          <CustomLink to={"/"} onClick={logout}>
+          <CustomLink to={"/about"} onClick={logout}>
             Logout
           </CustomLink>
           {user && <CustomLink to="/profile">{user.name}</CustomLink>}

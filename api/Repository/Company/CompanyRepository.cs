@@ -15,19 +15,30 @@ namespace Apex.Repository.CompanyRepo
                 Name = company.Name,
                 Email = company.Email,
                 Phone = company.Phone,
+                About = company.About,
                 Location = company.Location,
-                AdminId = company.AdminId
+                AdminId = company.AdminId,
+                Website = company.Website,
+                Photo = company.Photo is not null ? Convert.ToBase64String(company.Photo) : string.Empty
             };
         }
         public async Task<IEnumerable<CompanyResponse>> GetCompanies(){
-            var company = await GetManyAsync();
+            var company = await GetManyAsync(includeProperties: "Admin");
             return company.Select(c => new CompanyResponse(){
                 Id = c.Id,
                 Name = c.Name,
                 Email = c.Email,
                 Phone = c.Phone,
+                Website = c.Website,
+                About = c.About,
                 Location = c.Location,
-                AdminId = c.AdminId
+                AdminId = c.AdminId,
+                Photo = c.Photo is not null ? Convert.ToBase64String(c.Photo) : string.Empty,
+                AdminName = c.Admin.Name,
+                AdminPhoto = c.Admin.Avatar is not null ? Convert.ToBase64String(c.Admin.Avatar) : string.Empty,
+                AdminEmail = c.Admin.Email,
+                AdminPhone = c.Admin.Phone,
+                AdminBio = c.Admin.Bio,
             });
         }
         public async Task<CompanyResponse> FindByAdminId(int id){
@@ -40,8 +51,11 @@ namespace Apex.Repository.CompanyRepo
                 Name = company.Name,
                 Email = company.Email,
                 Phone = company.Phone,
+                About = company.About,
                 Location = company.Location,
-                AdminId = company.AdminId
+                AdminId = company.AdminId,
+                Website = company.Website,
+                Photo = company.Photo is not null ? Convert.ToBase64String(company.Photo) : string.Empty,
             };
         }
         public async Task<bool> UserHaveCompany(int id) =>

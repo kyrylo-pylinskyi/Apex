@@ -13,6 +13,7 @@ export class CreatePostForm extends Component {
   state = {
     title: "",
     content: "",
+    price: "",
     image: "",
     ValidationMessage: {
       title: "",
@@ -28,6 +29,10 @@ export class CreatePostForm extends Component {
     });
   };
 
+  handlePriceChange = (e) => {
+    this.setState({ price: e.target.value });
+  };
+
   handleFileSelect = (event) => {
     this.state.image = event.target.files[0];
   };
@@ -38,12 +43,12 @@ export class CreatePostForm extends Component {
     let contentValid = this.state.contentValid;
     switch (fieldName) {
       case "title":
-        titleValid = value.length >= 5 && value.length <= 25 && value !== null;
+        titleValid = value.length >= 5 && value.length <= 70 && value !== null;
         ErrorMessages.title = titleValid ? "" : "post title is too short";
         break;
       case "content":
         contentValid =
-          value.length >= 10 && value.length <= 300 && value !== null;
+          value.length >= 10 && value.length <= 700 && value !== null;
         ErrorMessages.content = contentValid
           ? ""
           : "content must be more than 10 characters and less than 300";
@@ -74,25 +79,23 @@ export class CreatePostForm extends Component {
 
   createPost = () => {
     let formData = new FormData();
-    formData.append("Title", this.state.title)
-    formData.append("Content", this.state.content)
-    formData.append("FormFile", this.state.image)
+    formData.append("Title", this.state.title);
+    formData.append("Content", this.state.content);
+    formData.append("Price", this.state.price);
+    formData.append("FormFile", this.state.image);
     axios
-      .post(
-        `${process.env.REACT_APP_SERVER}/Post/create`, formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            // 'Content-Type': 'application/json'
-          },
-        }
-      )
+      .post(`${process.env.REACT_APP_SERVER}/Post/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          // 'Content-Type': 'application/json'
+        },
+      })
       .then((response) => {
         this.props.backToFeed();
         alert(response.data);
       })
       .catch((error) => {
-        console.log("formFile", formData)
+        console.log("formFile", formData);
         console.log(error);
       });
   };
@@ -102,7 +105,7 @@ export class CreatePostForm extends Component {
     const { backToFeed } = this.props;
     return (
       <>
-        <div class="post-editor">
+        <div class="post-editor form">
           <FormField>
             <TextInputField
               label="Post title"
@@ -112,6 +115,13 @@ export class CreatePostForm extends Component {
               defaultValue={this.state.title}
             />
             <i>{this.state.ValidationMessage.title}</i>
+            <TextInputField
+              type="number"
+              label="Estimated contract price "
+              required
+              onChange={this.handlePriceChange}
+              defaultValue={this.state.price}
+            />
             <br />
             <Pane>
               <Label htmlFor="textarea-2" marginBottom={4} display="block">

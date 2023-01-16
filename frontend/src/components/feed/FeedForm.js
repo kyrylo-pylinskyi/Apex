@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import { Button } from "evergreen-ui";
+import { Button, DollarIcon } from "evergreen-ui";
 import CreatePostForm from "./CreatePostForm";
 import EditPostForm from "./EditPostForm";
+import UserProfileForm from "./UserProfileForm";
+import CreateContractForm from "../contracts/CreateContreactForm";
 
 export default function FeedForm() {
   const [Page, setPage] = useState(0);
@@ -11,6 +13,24 @@ export default function FeedForm() {
   const [company, setCompany] = useState();
   const [Data, setData] = useState();
   const [SelectedPost, setSelectedPost] = useState();
+  const [SelectedUser, setSelectedUser] = useState();
+  const [contracts, setContracts] = useState();
+
+  const fetchContracts = () => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          // 'Content-Type': 'application/json'
+        },
+      })
+      .then((response) => {
+        setCompany(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const fetchUserCompany = () => {
     axios
@@ -74,7 +94,7 @@ export default function FeedForm() {
     if (company)
       return (
         <>
-          <Button>Send Contract Request</Button>
+          <Button onClick={() => toCreateContractPage(post)}>Send Contract Request</Button>
         </>
       );
   };
@@ -108,6 +128,16 @@ export default function FeedForm() {
     setPage(2);
   };
 
+  const toUserProfile = (userId) => {
+    setSelectedUser(userId);
+    setPage(3);
+  };
+
+  const toCreateContractPage = (post) => {
+    setSelectedPost(post);
+    setPage(4);
+  };
+
   const backToFeed = () => {
     setPage(0);
     fetchData();
@@ -120,6 +150,10 @@ export default function FeedForm() {
   }, []);
 
   switch (Page) {
+    case 4:
+      return <CreateContractForm post={SelectedPost} back={backToFeed}/>;
+    case 3:
+      return <UserProfileForm userId={SelectedUser} backToFeed={backToFeed} />;
     case 2:
       return <EditPostForm backToFeed={backToFeed} post={SelectedPost} />;
     case 1:
@@ -134,15 +168,23 @@ export default function FeedForm() {
             {Data &&
               Data.map((item, key) => (
                 <div class="post-card" key={key}>
-                  <div class="post-card-header">
+                  <div
+                    class="post-card-header"
+                    onClick={() => toUserProfile(item.creatorId)}
+                  >
                     <img
                       class="post-author-photo"
+                      s
                       src={`data:image/png;base64,${item.creatorPhoto}`}
                     ></img>
                     <p class="post-author-name">{item.creatorName}</p>
                     <i class="post-created-at">{item.createdAt}</i>
                   </div>
                   <b class="post-card-title">{item.title}</b>
+                  <br />
+                  <i class="post-card-content">
+                    <DollarIcon/> {item.price}.00 PLN
+                  </i>
                   <p class="post-card-content">{item.content}</p>
                   <img src={`data:image/png;base64,${item.image}`}></img>
                   <br />

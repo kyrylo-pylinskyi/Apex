@@ -62,7 +62,7 @@ public class EmployeeController : ControllerBase
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateEmployee(EmployeeRequest request)
+    public async Task<IActionResult> CreateEmployee([FromForm] EmployeeRequest request)
     {
         string userEmail = _userService.GetUserEmail();
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
@@ -71,15 +71,31 @@ public class EmployeeController : ControllerBase
         if (company is null)
             return BadRequest("You must register a company to create employees");
 
-        var employee = new Employee{
+        var employee = new Employee
+        {
             FirstName = request.FirstName,
             LastName = request.LastName,
             FullName = $"{request.FirstName} {request.LastName}",
             BirthDate = request.BirthDate,
+            Email = request.Email,
+            Phone = request.Phone,
             Job = request.Job,
             EmployedAt = request.EmployedAt,
             CompanyId = Convert.ToInt32(company.Id),
+            Salary = request.Salary
         };
+
+        if (request.Avatar is not null)
+        {
+            byte[] imageData = null;
+            // считываем переданный файл в массив байтов
+            using (var binaryReader = new BinaryReader(request.Avatar.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)request.Avatar.Length);
+            }
+            // установка массива байтов
+            employee.Photo = imageData;
+        }
 
 
 
@@ -90,33 +106,45 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPut]
-    [Route("edit/{id}")]
-    public async Task<IActionResult> EditEmployee(int id, EmployeeRequest request)
+    [Route("edit")]
+    public async Task<IActionResult> EditEmployee([FromForm] EmployeeRequest request)
     {
         string userEmail = _userService.GetUserEmail();
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
         var company = await _unitOfWork.CompanyRepository.FindByAdminId(user.Id);
 
-        var employee = await _unitOfWork.EmployeeRepository.GetFirstAsync(e => e.Id == id);
-
-        if(company.Id != employee.CompanyId)
-            return BadRequest("You can't edit employee of another company");
+        var employee = await _unitOfWork.EmployeeRepository.GetFirstAsync(e => e.Id == request.Id);
 
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
         employee.FullName = $"{request.FirstName} {request.LastName}";
+        employee.Email = request.Email;
+        employee.Phone = request.Phone;
         employee.BirthDate = request.BirthDate;
         employee.Job = request.Job;
         employee.EmployedAt = request.EmployedAt;
+        employee.Salary = request.Salary;
+
+        if (request.Avatar is not null)
+        {
+            byte[] imageData = null;
+            // считываем переданный файл в массив байтов
+            using (var binaryReader = new BinaryReader(request.Avatar.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)request.Avatar.Length);
+            }
+            // установка массива байтов
+            employee.Photo = imageData;
+        }
 
         await _unitOfWork.CompleteAsync();
-        
+
         return Ok($"Employee {employee.FullName} data updated successfully");
     }
 
     [HttpDelete]
     [Route("delete/{id}")]
-    public async Task<IActionResult>DeleteEmployee(int id)
+    public async Task<IActionResult> DeleteEmployee(int id)
     {
         string userEmail = _userService.GetUserEmail();
         var user = await _unitOfWork.UserRepository.FindByEmail(userEmail);
@@ -124,12 +152,9 @@ public class EmployeeController : ControllerBase
 
         var employee = await _unitOfWork.EmployeeRepository.GetFirstAsync(e => e.Id == id);
 
-        if(company.Id != employee.Id)
-            return BadRequest("You can't delete employee of another company");
-
         await _unitOfWork.EmployeeRepository.DeleteAsync(employee);
         await _unitOfWork.CompleteAsync();
-        
+
         return Ok($"Employee {employee.FullName} deleted");
     }
 }

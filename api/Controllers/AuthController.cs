@@ -80,7 +80,7 @@ public class AuthController : ControllerBase
 
         _mailService.SendMail(message);
 
-        return Ok(user);
+        return Ok($"User {user.Name} registered");
     }
 
     [HttpPost]

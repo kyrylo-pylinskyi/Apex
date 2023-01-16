@@ -29,6 +29,7 @@ export class About extends Component {
         </p>
         <br/>
         <h4>Have a nice day!</h4>
+        <img src={'https://drive.google.com/uc?export=download&id=1lmkxlpGQp9u4I7nLmkFXZRceG24-L4OS'}/>
       </>
     );
   }

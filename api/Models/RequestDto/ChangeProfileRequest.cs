@@ -7,6 +7,7 @@ namespace Apex.Models.RequestDto
         public string Name { get; set; } = string.Empty;
         [Required, Phone]
         public string Phone { get; set; } = string.Empty;
+        public string? Bio { get; set; }
         public IFormFile? FormFile {get; set;} 
     }
 }

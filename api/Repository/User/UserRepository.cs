@@ -26,6 +26,7 @@ namespace Apex.Repository.UserRepo
                 Name = user.Name,
                 Email = user.Email,
                 Phone = user.Phone,
+                Bio = user.Bio,
                 Avatar = user.Avatar is not null ? Convert.ToBase64String(user.Avatar) : string.Empty,
                 Role = user.Role
             };

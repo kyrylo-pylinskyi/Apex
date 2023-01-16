@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import validateToken from "../auth/tokenValidator";
 import axios from "axios";
-import { Table, Button } from "evergreen-ui";
+import { Table, Button, DollarIcon } from "evergreen-ui";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
 import CreateCompanyForm from "./CreateCompanyForm";
 import EditCompanyForm from "./EditCompanyForm";
@@ -170,7 +170,13 @@ export default function ProfileForm() {
           <div>
             <div>
               <div>
-                <h3>Company info</h3>
+                {company && <h3>Company: {company.name}</h3>}
+                {company && (
+                  <img
+                    class="company-photo"
+                    src={`data:image/png;base64,${company.photo}`}
+                  />
+                )}
                 {company && (
                   <p>
                     <i>Phone</i>
@@ -185,19 +191,22 @@ export default function ProfileForm() {
                 )}
                 {company && (
                   <p>
+                    <i>Website</i>
+                    {company.website}
+                  </p>
+                )}
+                {company && (
+                  <p>
                     <i>Location</i>
                     {company.location}
                   </p>
                 )}
-                <div>
-                  <h3>Bio</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, hello how consectetur
-                    adipisicing elit. Sint consectetur provident magni yohoho
-                    consequuntur, voluptatibus ghdfff exercitationem at quis
-                    similique. Optio, amet!
-                  </p>
-                </div>
+                {company && (
+                  <div>
+                    <h3>About</h3>
+                    <p>{company.about}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -234,7 +243,7 @@ export default function ProfileForm() {
               <div class="profile-nav-info">{user && <h3>{user.name}</h3>}</div>
             </div>
             <div class="leftSide main-bd profile-side">
-              <h4>Profile info</h4>
+              <h3>Profile info</h3>
               {user && (
                 <p>
                   <i>Name</i>
@@ -253,15 +262,12 @@ export default function ProfileForm() {
                   {user.phone}
                 </p>
               )}
-              <div>
-                <h3>Bio</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, hello how consectetur adipisicing
-                  elit. Sint consectetur provident magni yohoho consequuntur,
-                  voluptatibus ghdfff exercitationem at quis similique. Optio,
-                  amet!
-                </p>
-              </div>
+              {user && (
+                <div>
+                  <h3>Bio</h3>
+                  <p>{user.bio}</p>
+                </div>
+              )}
               <div>
                 <Button onClick={editProfile}>Edit Profile</Button>
               </div>
@@ -282,6 +288,10 @@ export default function ProfileForm() {
                       <i class="post-created-at">{item.createdAt}</i>
                     </div>
                     <b class="post-card-title">{item.title}</b>
+                    <br />
+                    <i class="post-card-content">
+                      <DollarIcon /> {item.price}.00 PLN
+                    </i>
                     <p class="post-card-content">{item.content}</p>
                     <img src={`data:image/png;base64,${item.image}`}></img>
                     <br />

@@ -61,7 +61,7 @@ export class RegisterForm extends Component {
         confirmPassword: this.state.confirmPassword,
       })
       .then(function (response) {
-        alert(response.data);
+        alert("We sent email verification code to your email address");
       })
       .catch(function (error) {
         alert(error);
@@ -77,7 +77,7 @@ export class RegisterForm extends Component {
     axios
       .post(`${process.env.REACT_APP_SERVER}/Auth/verify-email`, formData)
       .then(function (response) {
-        alert(response.data);
+        alert("Email address verified!");
       })
       .catch(function (error) {
         console.log(error);
