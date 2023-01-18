@@ -14,10 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 var provider = builder.Services.BuildServiceProvider();
 var configuration = provider.GetRequiredService<IConfiguration>();
 
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     var client = configuration.GetValue<string>("Client");
 
-    options.AddDefaultPolicy(builder =>{
+    options.AddDefaultPolicy(builder =>
+    {
         builder.WithOrigins(client)
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -26,7 +28,15 @@ builder.Services.AddCors(options => {
 
 });
 
+var dbUserId = Environment.GetEnvironmentVariable("DB_USER_ID");
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
+
+var connectionString = $"Initial Catalog={dbName}; Data Source={dbHost}; Persist Security Info=True;User ID={dbUserId};Password={dbPassword}";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
+    // builder.Configuration.GetConnectionString("DefaultConnection")
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
@@ -70,12 +80,9 @@ var app = builder.Build();
 
 app.UseCors();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

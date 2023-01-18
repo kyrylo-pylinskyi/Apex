@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apex.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230114174659_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230117223805_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
