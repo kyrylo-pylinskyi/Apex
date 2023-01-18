@@ -84,7 +84,7 @@ export class CreatePostForm extends Component {
     formData.append("Price", this.state.price);
     formData.append("FormFile", this.state.image);
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Post/create`, formData, {
+      .post(`api/Post/create`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

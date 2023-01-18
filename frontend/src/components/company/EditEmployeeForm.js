@@ -114,7 +114,7 @@ export default class EditEmployeeFrom extends Component {
     formData.append("Salary", this.state.salary);
     formData.append("EmployedAt", this.state.employmentDate);
     axios
-      .put(`${process.env.REACT_APP_SERVER}/Employee/edit`, formData, {
+      .put(`api/Employee/edit`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const fetchUserDetails = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Auth/get-me`, {
+      .get(`api/Auth/get-me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ export default function Navbar() {
 
   const fetchUserCompany = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+      .get(`api/Company/my-company`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

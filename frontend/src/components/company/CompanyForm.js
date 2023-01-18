@@ -30,7 +30,7 @@ export default function CompanyForm() {
 
   const fetchUserCompany = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+      .get(`api/Company/my-company`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ export default function CompanyForm() {
   const deleteEmployee = (id) => {
     if (window.confirm("Are you sure you want delete you company?")) {
       axios
-        .delete(`${process.env.REACT_APP_SERVER}/Employee/delete/${id}`, {
+        .delete(`api/Employee/delete/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             // 'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ export default function CompanyForm() {
 
   const fetchUserEmployees = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Employee/my-employees`, {
+      .get(`api/Employee/my-employees`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

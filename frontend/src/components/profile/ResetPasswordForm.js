@@ -22,7 +22,7 @@ export class ResetPasswordForm extends Component {
 
   resetPassword = () => {
     axios
-      .put(`${process.env.REACT_APP_SERVER}/Auth/reset-password`, {
+      .put(`api/Auth/reset-password`, {
         email: this.state.email,
         token: this.state.token,
         password: this.state.password,

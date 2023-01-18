@@ -53,7 +53,7 @@ export class RegisterForm extends Component {
 
   registerUser = () => {
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Auth/register`, {
+      .post(`api/Auth/register`, {
         name: `${this.state.firstName} ${this.state.lastName}`,
         email: this.state.email,
         phone: this.state.phone,
@@ -75,7 +75,7 @@ export class RegisterForm extends Component {
     formData.append("Email", this.state.email);
     formData.append("Token", this.state.verificationCode)
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Auth/verify-email`, formData)
+      .post(`api/Auth/verify-email`, formData)
       .then(function (response) {
         alert("Email address verified!");
       })

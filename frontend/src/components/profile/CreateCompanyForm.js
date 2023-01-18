@@ -91,7 +91,7 @@ export class CreateCompanyForm extends Component {
     formData.append("About", this.state.about);
     formData.append("Website", this.state.website);
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Company/create`, formData, {
+      .post(`api/Company/create`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

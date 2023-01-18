@@ -18,7 +18,7 @@ export default function FeedForm() {
 
   const fetchContracts = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+      .get(`api/Company/my-company`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -34,7 +34,7 @@ export default function FeedForm() {
 
   const fetchUserCompany = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Company/my-company`, {
+      .get(`api/Company/my-company`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ export default function FeedForm() {
 
   const fetchUserDetails = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Auth/get-me`, {
+      .get(`api/Auth/get-me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ export default function FeedForm() {
 
   const fetchData = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Post/feed`, {
+      .get(`api/Post/feed`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -102,7 +102,7 @@ export default function FeedForm() {
   const deletePost = (postId) => {
     if (window.confirm("Are you sure you want delete these post?")) {
       axios
-        .delete(`${process.env.REACT_APP_SERVER}/Post/delete/${postId}`, {
+        .delete(`api/Post/delete/${postId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",

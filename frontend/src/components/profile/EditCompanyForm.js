@@ -91,7 +91,7 @@ export class EditCompanyForm extends Component {
     formData.append("About", this.state.about);
     formData.append("Website", this.state.website);
     axios
-      .put(`${process.env.REACT_APP_SERVER}/Company/edit`, formData, {
+      .put(`api/Company/edit`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

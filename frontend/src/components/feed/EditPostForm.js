@@ -89,7 +89,7 @@ export class EditPostForm extends Component {
     formData.append("FormFile", this.state.image);
     formData.append("Price", this.state.price);
     axios
-      .put(`${process.env.REACT_APP_SERVER}/Post/edit`, formData, {
+      .put(`api/Post/edit`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

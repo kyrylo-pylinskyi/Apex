@@ -16,7 +16,7 @@ export default function MyCompanyContactsForm() {
 
   const fetchUserDetails = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Auth/get-me`, {
+      .get(`api/Auth/get-me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ export default function MyCompanyContactsForm() {
 
   const fetchMyContracts = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Contract/my-company-contracts`, {
+      .get(`api/Contract/my-company-contracts`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ export default function MyCompanyContactsForm() {
   const deleteContract = (id) => {
     if (window.confirm("Are you sure you want delete these post?")) {
       axios
-        .delete(`${process.env.REACT_APP_SERVER}/Contract/delete/${id}`, {
+        .delete(`api/Contract/delete/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             // 'Content-Type': 'application/json'

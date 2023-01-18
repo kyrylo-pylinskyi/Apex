@@ -112,7 +112,7 @@ export default class CreateEmployeeForm extends Component {
     formData.append("Salary", this.state.salary);
     formData.append("EmployedAt", this.state.employmentDate);
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Employee/create`, formData, {
+      .post(`api/Employee/create`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

@@ -16,7 +16,7 @@ export default function CompaniesPage() {
 
   const fetchCompanies = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Company/list`, {
+      .get(`api/Company/list`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

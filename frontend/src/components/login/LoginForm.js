@@ -16,7 +16,7 @@ export class LoginForm extends Component {
 
   tryLogin = () => {
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Auth/login`, {
+      .post(`api/Auth/login`, {
         email: this.state.email,
         password: this.state.password,
       })

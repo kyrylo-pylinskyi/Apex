@@ -60,7 +60,7 @@ export class EditProfileForm extends Component {
     formData.append("FormFile", this.state.image);
     formData.append("Bio", this.state.bio);
     axios
-      .put(`${process.env.REACT_APP_SERVER}/Profile/edit`, formData, {
+      .put(`api/Profile/edit`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

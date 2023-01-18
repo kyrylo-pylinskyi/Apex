@@ -19,7 +19,7 @@ export default function CreateContractForm(props) {
     formData.append("Price", price);
     formData.append("Comment", comment);
     axios
-      .post(`${process.env.REACT_APP_SERVER}/Contract/create`, formData, {
+      .post(`api/Contract/create`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'

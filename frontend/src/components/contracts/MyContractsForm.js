@@ -19,7 +19,7 @@ export default function MyContactsForm() {
 
   const fetchUserDetails = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Auth/get-me`, {
+      .get(`api/Auth/get-me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -35,7 +35,7 @@ export default function MyContactsForm() {
 
   const fetchMyContracts = () => {
     axios
-      .get(`${process.env.REACT_APP_SERVER}/Contract/my-contracts`, {
+      .get(`api/Contract/my-contracts`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           // 'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ export default function MyContactsForm() {
   const activateContract = (id) => {
     axios
       .put(
-        `${process.env.REACT_APP_SERVER}/Contract/activate/${id}`,
+        `api/Contract/activate/${id}`,
         {},
         {
           headers: {
@@ -72,7 +72,7 @@ export default function MyContactsForm() {
   const deactivateContract = (id) => {
     axios
       .put(
-        `${process.env.REACT_APP_SERVER}/Contract/deactivate/${id}`,
+        `api/Contract/deactivate/${id}`,
         {},
         {
           headers: {
@@ -93,7 +93,7 @@ export default function MyContactsForm() {
   const deleteContract = (id) => {
     if (window.confirm("Are you sure you want delete these post?")) {
       axios
-        .delete(`${process.env.REACT_APP_SERVER}/Contract/delete/${id}`, {
+        .delete(`api/Contract/delete/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             // 'Content-Type': 'application/json'
